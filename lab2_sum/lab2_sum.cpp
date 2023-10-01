@@ -1,5 +1,20 @@
 #include <iostream>
 #include <windows.h>
+#include <boost/lexical_cast.hpp>
+
+class ThreadError : public std::exception
+{
+public:
+    ThreadError(const std::string& message) : message{ message }
+    {}
+
+    const char* what() const noexcept override
+    {
+        return message.c_str();
+    }
+private:
+    std::string message;
+};
 
 struct funcArgument {
     double* arrNumbers = nullptr;
@@ -56,19 +71,18 @@ DWORD WINAPI findMinMax(LPVOID arg)
 
 void startThread(funcArgument* arg, void* funcToCall) {
 
-    HANDLE hAverageThread;
-    DWORD IDaverageThread;
+    HANDLE hThread;
+    DWORD IDThread;
 
-    hAverageThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)funcToCall, (void*)arg, 0, &IDaverageThread);
+    hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)funcToCall, (void*)arg, 0, &IDThread);
 
-    if (hAverageThread == NULL) {
-        std::cout << "could not create a thread for sum";
-        //return GetLastError(); TODO add exceptions
+    if (hThread == NULL) {
+        throw ThreadError("could not create a thread with id " + boost::lexical_cast<std::string>(IDThread));
     }
 
-    WaitForSingleObject(hAverageThread, INFINITE);
+    WaitForSingleObject(hThread, INFINITE);
 
-    CloseHandle(hAverageThread);
+    CloseHandle(hThread);
 }
 
 int main()
@@ -90,11 +104,23 @@ int main()
     generalArg->arrNumbers = numbers;
     generalArg->cntNum = n;
 
-    startThread(generalArg, findAverage);
+    try {
+        startThread(generalArg, findAverage);
+    }
+    catch (const ThreadError& err) {
+        std::cout << err.what() << std::endl;
+        return -1;
+    }
 
     std::cout << "The average of given numbers is " << generalArg->average << std::endl;
 
-    startThread(generalArg, findMinMax);
+    try {
+        startThread(generalArg, findMinMax);
+    }
+    catch (const ThreadError& err) {
+        std::cout << err.what() << std::endl;
+        return -1;
+    }
 
     std::cout << "The min and max elements of given numbers are " << 
                     generalArg->min << " and " << generalArg->max << std::endl;
