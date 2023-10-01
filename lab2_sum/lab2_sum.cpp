@@ -12,8 +12,6 @@ struct funcArgument {
 
 DWORD WINAPI findAverage(LPVOID arg)
 {
-    std::cout << "Average thread is started." << std::endl;
-
     double sum = 0;
     funcArgument* info = static_cast<funcArgument*>(arg);
 
@@ -26,15 +24,11 @@ DWORD WINAPI findAverage(LPVOID arg)
 
     static_cast<funcArgument*>(arg)->average = sum / info->cntNum;
 
-    std::cout << "Average thread is finished." << std::endl;
-
     return 0;
 }
 
 DWORD WINAPI findMinMax(LPVOID arg)
 {
-    std::cout << "MinMax thread is started." << std::endl;
-
     funcArgument* info = static_cast<funcArgument*>(arg);
     double* numbers = info->arrNumbers;
 
@@ -46,7 +40,7 @@ DWORD WINAPI findMinMax(LPVOID arg)
         prevMin = min(prevMin, min(numbers[i], numbers[i + 1]));
         prevMax = max(prevMax, max(numbers[i], numbers[i + 1]));
 
-        Sleep(12);
+        Sleep(7);
     }
 
     if (info->cntNum % 2 != 0) {
@@ -54,12 +48,27 @@ DWORD WINAPI findMinMax(LPVOID arg)
         prevMax = max(prevMax, numbers[info->cntNum - 1]);
     }
 
-    static_cast<funcArgument*>(arg)->min = 0;
-    static_cast<funcArgument*>(arg)->max = 0;
-
-    std::cout << "MinMax thread is finished." << std::endl;
+    static_cast<funcArgument*>(arg)->min = prevMin;
+    static_cast<funcArgument*>(arg)->max = prevMax;
 
     return 0;
+}
+
+void startThread(funcArgument* arg, void* funcToCall) {
+
+    HANDLE hAverageThread;
+    DWORD IDaverageThread;
+
+    hAverageThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)funcToCall, (void*)arg, 0, &IDaverageThread);
+
+    if (hAverageThread == NULL) {
+        std::cout << "could not create a thread for sum";
+        //return GetLastError(); TODO add exceptions
+    }
+
+    WaitForSingleObject(hAverageThread, INFINITE);
+
+    CloseHandle(hAverageThread);
 }
 
 int main()
@@ -77,25 +86,18 @@ int main()
         std::cin >> numbers[i];
     }
 
-    HANDLE hAverageThread;
-    DWORD IDaverageThread;
-
     funcArgument* generalArg = new funcArgument();
     generalArg->arrNumbers = numbers;
     generalArg->cntNum = n;
-    
-    hAverageThread = CreateThread(NULL, 0, findAverage, (void*)generalArg, 0, &IDaverageThread);
 
-    if (hAverageThread == NULL) {
-        std::cout << "could not create a thread for sum";
-        return GetLastError();
-    }
-
-    WaitForSingleObject(hAverageThread, INFINITE);
-
-    CloseHandle(hAverageThread);
+    startThread(generalArg, findAverage);
 
     std::cout << "The average of given numbers is " << generalArg->average << std::endl;
+
+    startThread(generalArg, findMinMax);
+
+    std::cout << "The min and max elements of given numbers are " << 
+                    generalArg->min << " and " << generalArg->max << std::endl;
     
     return 0;
 }
