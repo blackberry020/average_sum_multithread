@@ -1,36 +1,18 @@
-#include <iostream>
 #include <windows.h>
 #include <boost/lexical_cast.hpp>
 
-class ThreadError : public std::exception
-{
-public:
-    ThreadError(const std::string& message) : message{ message }
-    {}
-
-    const char* what() const noexcept override
-    {
-        return message.c_str();
-    }
-private:
-    std::string message;
-};
-
-struct funcArgument {
-    double* arrNumbers = nullptr;
-    int cntNum = 0;
-
-    double average = 0;
-    int minIndex = 0;
-    int maxIndex = 0;
-};
+#include "threadError.h"
+#include "funcArgument.h"
+#include "Array.h"
 
 DWORD WINAPI findAverage(LPVOID arg)
 {
+    std::cout << "great" << std::endl;
+
     double sum = 0;
     funcArgument* info = static_cast<funcArgument*>(arg);
 
-    double* numbers = info->arrNumbers;
+    Array<double> numbers = info->arrNumbers;
 
     for (int i = 0; i < info->cntNum; i++) {
         sum += numbers[i];
@@ -45,7 +27,7 @@ DWORD WINAPI findAverage(LPVOID arg)
 DWORD WINAPI findMinMax(LPVOID arg)
 {
     funcArgument* info = static_cast<funcArgument*>(arg);
-    double* numbers = info->arrNumbers;
+    Array<double> numbers = info->arrNumbers;
 
     int minIndex = 0;
     int maxIndex = 0;
@@ -109,20 +91,17 @@ int main()
     std::cout << "Enter the amount of numbers" << std::endl;
     std::cin >> n;
 
-    double* numbers = new double[n];
+    Array<double> numbers(n);
 
     std::cout << "Enter your numbers" << std::endl;
 
-    for (int i = 0; i < n; i++) {
-        std::cin >> numbers[i];
-    }
+    numbers.readArray();
 
-    funcArgument* generalArg = new funcArgument();
-    generalArg->arrNumbers = numbers;
-    generalArg->cntNum = n;
+    funcArgument* generalArg = new funcArgument(numbers, n);
 
     try {
         startThread(generalArg, findAverage);
+        std::cout << "still great" << std::endl;
     }
     catch (const ThreadError& err) {
         std::cout << err.what() << std::endl;
@@ -141,6 +120,15 @@ int main()
 
     std::cout << "The min and max elements of given numbers are " << 
                     numbers[generalArg->minIndex] << " and " << numbers[generalArg->maxIndex] << std::endl;
+
+    numbers[generalArg->minIndex] = generalArg->average;
+    numbers[generalArg->maxIndex] = generalArg->average;
+
+    std::cout << "Your numbers after replacing min and max with average: " << std::endl;
+
+    numbers.printArray();
+
+    std::cout << std::endl;
     
     return 0;
 }
