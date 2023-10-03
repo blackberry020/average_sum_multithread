@@ -21,8 +21,8 @@ struct funcArgument {
     int cntNum = 0;
 
     double average = 0;
-    double min = 0;
-    double max = 0;
+    int minIndex = 0;
+    int maxIndex = 0;
 };
 
 DWORD WINAPI findAverage(LPVOID arg)
@@ -47,24 +47,41 @@ DWORD WINAPI findMinMax(LPVOID arg)
     funcArgument* info = static_cast<funcArgument*>(arg);
     double* numbers = info->arrNumbers;
 
-    double prevMin = min(numbers[0], numbers[1]);
-    double prevMax = max(numbers[0], numbers[1]);
+    int minIndex = 0;
+    int maxIndex = 0;
+
+    if (numbers[0] < numbers[1]) maxIndex = 1;
+    else minIndex = 1;
 
     for (int i = 2; i < info->cntNum && i + 1 < info->cntNum; i += 2) {
         
-        prevMin = min(prevMin, min(numbers[i], numbers[i + 1]));
-        prevMax = max(prevMax, max(numbers[i], numbers[i + 1]));
+        if (numbers[i] < numbers[i + 1]) {
+            if (numbers[i] < numbers[minIndex])
+                minIndex = i;
+            if (numbers[i + 1] > numbers[maxIndex])
+                maxIndex = i + 1;
+        }
+        else {
+            if (numbers[i] > numbers[maxIndex])
+                maxIndex = i;
+            if (numbers[i + 1] < numbers[minIndex])
+                minIndex = i + 1;
+        }
 
         Sleep(7);
     }
 
     if (info->cntNum % 2 != 0) {
-        prevMin = min(prevMin, numbers[info->cntNum - 1]);
-        prevMax = max(prevMax, numbers[info->cntNum - 1]);
+        
+        if (numbers[info->cntNum - 1] < numbers[minIndex])
+            minIndex = info->cntNum - 1;
+        else
+            if (numbers[info->cntNum - 1] > numbers[maxIndex])
+                maxIndex = info->cntNum - 1;
     }
 
-    static_cast<funcArgument*>(arg)->min = prevMin;
-    static_cast<funcArgument*>(arg)->max = prevMax;
+    static_cast<funcArgument*>(arg)->minIndex = minIndex;
+    static_cast<funcArgument*>(arg)->maxIndex = maxIndex;
 
     return 0;
 }
@@ -123,7 +140,7 @@ int main()
     }
 
     std::cout << "The min and max elements of given numbers are " << 
-                    generalArg->min << " and " << generalArg->max << std::endl;
+                    numbers[generalArg->minIndex] << " and " << numbers[generalArg->maxIndex] << std::endl;
     
     return 0;
 }
