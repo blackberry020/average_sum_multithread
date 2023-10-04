@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ArrayError.h"
+
 template <typename T>
 class Array {
 public:
@@ -15,12 +17,14 @@ public:
 
     Array(const Array& ref)
     {
-        array = ref.array;
+        array = new T[ref.arraySize];
         arraySize = ref.arraySize;
+        
+        copyElements(*this, ref);
     }
 
     ~Array() {
-        delete[] array;
+        delete array;
     }
 
     void printArray() {
@@ -40,14 +44,32 @@ public:
         return array[index];
     }
 
-    Array operator = (Array ref)
+    Array& operator = (const Array& ref)
     {
-        array = ref.array;
-        arraySize = ref.arraySize;
+        if (this != &ref) {
+            delete array;
+
+            arraySize = ref.arraySize;
+            array = new T[arraySize];
+
+            copyElements(*this, ref);
+        }
+
         return *this;
     }
 
 private:
     T* array;
     int arraySize;
+
+    void copyElements(Array& array1, const Array& array2) {
+
+        if (array1.arraySize != array2.arraySize) {
+            throw ArrayError("If you copy an array to another one their sizes must be equal");
+        }
+
+        for (int i = 0; i < array1.arraySize; i++) {
+            array1.array[i] = array2.array[i];
+        }
+    }
 };

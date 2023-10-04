@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ArrayError.cpp" />
     <ClCompile Include="lab2_sum.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -134,6 +135,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Array.h" />
+    <ClInclude Include="ArrayError.h" />
     <ClInclude Include="funcArgument.h" />
     <ClInclude Include="threadError.h" />
   </ItemGroup>

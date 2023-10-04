@@ -7,8 +7,6 @@
 
 DWORD WINAPI findAverage(LPVOID arg)
 {
-    std::cout << "great" << std::endl;
-
     double sum = 0;
     funcArgument* info = static_cast<funcArgument*>(arg);
 
@@ -101,7 +99,6 @@ int main()
 
     try {
         startThread(generalArg, findAverage);
-        std::cout << "still great" << std::endl;
     }
     catch (const ThreadError& err) {
         std::cout << err.what() << std::endl;
