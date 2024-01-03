@@ -2,6 +2,8 @@
 
 int findAverageInArray(Array<int> array) {
 
+    if (array.getSize() == 0) return 0;
+
     int sum = 0;
 
     for (int i = 0; i < array.getSize(); i++) {
@@ -13,6 +15,10 @@ int findAverageInArray(Array<int> array) {
 }
 
 std::pair<int, int> findMinMaxInArray(Array<int> numbers) {
+
+    if (numbers.getSize() == 0) {
+        return { -1, -1 };
+    }
 
     int minIndex = 0;
     int maxIndex = 0;

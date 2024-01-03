@@ -5,7 +5,7 @@
 
 #include <vector>
 
-//#include "..\lab2_sum\functions.h"
+#include "..\lab2_sum\functions.cpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -15,14 +15,58 @@ namespace AverageMinMaxTesting
 	{
 	public:
 		
-		TEST_METHOD(TestAverage)
+		TEST_METHOD(TestAverage1)
 		{
 			std::vector<int> a = {1, 2, 3, 4};
-			//Array<int> array(a);
+			Array<int> array(a);
+			Assert::AreEqual(2, findAverageInArray(array));
+		}
 
-			//int dop = findAverageInArray(array);
+		TEST_METHOD(TestAverage2)
+		{
+			std::vector<int> a = { 2, 2, 2, 2 };
+			Array<int> array(a);
+			Assert::AreEqual(2, findAverageInArray(array));
+		}
 
-			Assert::AreEqual(2, a[1]);
+		TEST_METHOD(TestAverageEmptyArray)
+		{
+			std::vector<int> a = {};
+			Array<int> array(a);
+			Assert::AreEqual(0, findAverageInArray(array));
+		}
+
+		TEST_METHOD(TestMinMaxEmptyArray)
+		{
+			std::vector<int> a = {};
+			Array<int> array(a);
+
+			std::pair<int, int> result = findMinMaxInArray(array);
+
+			Assert::AreEqual(-1, result.first);
+			Assert::AreEqual(-1, result.second);
+		}
+
+		TEST_METHOD(TestMinMax1)
+		{
+			std::vector<int> a = {4, 5, 1, 2, 6, 2};
+			Array<int> array(a);
+
+			std::pair<int, int> result = findMinMaxInArray(array);
+
+			Assert::AreEqual(1, array[result.first]);
+			Assert::AreEqual(6, array[result.second]);
+		}
+
+		TEST_METHOD(TestMinMax2)
+		{
+			std::vector<int> a = { 1, 5, 4, 2, 3, 6 };
+			Array<int> array(a);
+
+			std::pair<int, int> result = findMinMaxInArray(array);
+
+			Assert::AreEqual(1, array[result.first]);
+			Assert::AreEqual(6, array[result.second]);
 		}
 	};
 }
