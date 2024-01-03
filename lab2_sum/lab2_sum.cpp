@@ -9,6 +9,7 @@
 
 #include "functions.h"
 
+// finding average function for the thread
 DWORD WINAPI findAverage(LPVOID arg)
 {
     int sum = 0;
@@ -20,6 +21,7 @@ DWORD WINAPI findAverage(LPVOID arg)
     return 0;
 }
 
+// finding min max function for the thread
 DWORD WINAPI findMinMax(LPVOID arg)
 {
     funcArgument* info = static_cast<funcArgument*>(arg);
@@ -45,25 +47,28 @@ void startThread(funcArgument* arg, void* funcToCall) {
     }
 
     WaitForSingleObject(hThread, INFINITE);
-
     CloseHandle(hThread);
 }
 
 int main()
 {
-    int n;
+    // get the amount of numbers, it must be a positive number
+    int n = -1;
 
-    std::cout << "Enter the amount of numbers" << std::endl;
-    std::cin >> n;
+    while (n <= 0) {
+        std::cout << "Enter the amount of numbers" << std::endl;
+        std::cin >> n;
+    }
 
+    // get all the numbers
     Array<int> numbers(n);
-
     std::cout << "Enter your numbers" << std::endl;
-
     numbers.readArray();
 
+    // create an argument for the thread's functions
     funcArgument* generalArg = new funcArgument(numbers, n);
 
+    // find average
     try {
         startThread(generalArg, findAverage);
     }
@@ -74,6 +79,7 @@ int main()
 
     std::cout << "The average of given numbers is " << generalArg->average << std::endl;
 
+    // find min and max
     try {
         startThread(generalArg, findMinMax);
     }
@@ -85,11 +91,11 @@ int main()
     std::cout << "The min and max elements of given numbers are " << 
                     numbers[generalArg->minIndex] << " and " << numbers[generalArg->maxIndex] << std::endl;
 
+    // change min and max to the average
     numbers[generalArg->minIndex] = generalArg->average;
     numbers[generalArg->maxIndex] = generalArg->average;
 
     std::cout << "Your numbers after replacing min and max with average: " << std::endl;
-
     numbers.printArray();
 
     std::cout << std::endl;
