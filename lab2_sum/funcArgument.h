@@ -4,15 +4,15 @@
 
 struct funcArgument {
 
-    funcArgument(Array<double> _arr, int _cnt) {
+    funcArgument(Array<int> _arr, int _cnt) {
         arrNumbers = _arr;
         cntNum = _cnt;
     }
 
-    Array<double> arrNumbers;
+    Array<int> arrNumbers;
     int cntNum = 0;
 
-    double average = 0;
+    int average = 0;
     int minIndex = 0;
     int maxIndex = 0;
 };

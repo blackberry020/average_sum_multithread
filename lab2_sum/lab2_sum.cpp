@@ -1,3 +1,5 @@
+#pragma once
+
 #include <windows.h>
 #include <boost/lexical_cast.hpp>
 
@@ -5,19 +7,15 @@
 #include "funcArgument.h"
 #include "Array.h"
 
+#include "functions.h"
+
 DWORD WINAPI findAverage(LPVOID arg)
 {
-    double sum = 0;
+    int sum = 0;
     funcArgument* info = static_cast<funcArgument*>(arg);
 
-    Array<double> numbers = info->arrNumbers;
-
-    for (int i = 0; i < info->cntNum; i++) {
-        sum += numbers[i];
-        Sleep(12);
-    }
-
-    static_cast<funcArgument*>(arg)->average = sum / info->cntNum;
+    Array<int> numbers = info->arrNumbers;
+    static_cast<funcArgument*>(arg)->average = findAverageInArray(numbers);
 
     return 0;
 }
@@ -25,43 +23,12 @@ DWORD WINAPI findAverage(LPVOID arg)
 DWORD WINAPI findMinMax(LPVOID arg)
 {
     funcArgument* info = static_cast<funcArgument*>(arg);
-    Array<double> numbers = info->arrNumbers;
 
-    int minIndex = 0;
-    int maxIndex = 0;
+    Array<int> numbers = info->arrNumbers;
+    std::pair<int, int> minMax = findMinMaxInArray(numbers);
 
-    if (numbers[0] < numbers[1]) maxIndex = 1;
-    else minIndex = 1;
-
-    for (int i = 2; i < info->cntNum && i + 1 < info->cntNum; i += 2) {
-        
-        if (numbers[i] < numbers[i + 1]) {
-            if (numbers[i] < numbers[minIndex])
-                minIndex = i;
-            if (numbers[i + 1] > numbers[maxIndex])
-                maxIndex = i + 1;
-        }
-        else {
-            if (numbers[i] > numbers[maxIndex])
-                maxIndex = i;
-            if (numbers[i + 1] < numbers[minIndex])
-                minIndex = i + 1;
-        }
-
-        Sleep(7);
-    }
-
-    if (info->cntNum % 2 != 0) {
-        
-        if (numbers[info->cntNum - 1] < numbers[minIndex])
-            minIndex = info->cntNum - 1;
-        else
-            if (numbers[info->cntNum - 1] > numbers[maxIndex])
-                maxIndex = info->cntNum - 1;
-    }
-
-    static_cast<funcArgument*>(arg)->minIndex = minIndex;
-    static_cast<funcArgument*>(arg)->maxIndex = maxIndex;
+    static_cast<funcArgument*>(arg)->minIndex = minMax.first;
+    static_cast<funcArgument*>(arg)->maxIndex = minMax.second;
 
     return 0;
 }
@@ -89,7 +56,7 @@ int main()
     std::cout << "Enter the amount of numbers" << std::endl;
     std::cin >> n;
 
-    Array<double> numbers(n);
+    Array<int> numbers(n);
 
     std::cout << "Enter your numbers" << std::endl;
 

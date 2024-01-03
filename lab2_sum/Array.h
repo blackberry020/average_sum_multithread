@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ArrayError.h"
+#include <vector>
 
 template <typename T>
 class Array {
@@ -14,6 +15,26 @@ public:
     Array(const int _size) : arraySize(_size) {
         array = new T[_size];
     };
+
+    Array(const int* a, int n) {
+
+        arraySize = n;
+        array = new T[n];
+
+        for (int i = 0; i < n; i++) {
+            array[i] = a[i];
+        }
+    }
+
+    Array(std::vector<T> a) {
+
+        arraySize = a.size();
+        array = new T[a.size()];
+
+        for (int i = 0; i < a.size(); i++) {
+            array[i] = a[i];
+        }
+    }
 
     Array(const Array& ref)
     {
@@ -38,6 +59,10 @@ public:
         for (int i = 0; i < arraySize; i++) {
             std::cin >> array[i];
         }
+    }
+
+    int getSize() {
+        return arraySize;
     }
 
     T& operator[](const int index) {
