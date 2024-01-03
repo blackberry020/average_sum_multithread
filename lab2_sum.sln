@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lab2_sum", "lab2_sum\lab2_sum.vcxproj", "{51D7AD32-8FDC-4E4D-9E68-175274A17C90}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AverageMinMaxTesting", "AverageMinMaxTesting\AverageMinMaxTesting.vcxproj", "{71CB2287-EE83-483D-9D32-BB95F765A1AD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{51D7AD32-8FDC-4E4D-9E68-175274A17C90} = {51D7AD32-8FDC-4E4D-9E68-175274A17C90}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
